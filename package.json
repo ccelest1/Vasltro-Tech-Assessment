@@ -1,0 +1,30 @@
+{
+  "name": "vasltro-tech-assessment",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/src/index.js",
+    "dev": "ts-node src/index.ts",
+    "test": "ts-node tests/testClient.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ccelest1/Vasltro-Tech-Assessment.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/ccelest1/Vasltro-Tech-Assessment/issues"
+  },
+  "homepage": "https://github.com/ccelest1/Vasltro-Tech-Assessment#readme",
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.2"
+  },
+  "dependencies": {
+    "socket.io-client": "^4.8.3"
+  }
+}
