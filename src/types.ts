@@ -6,8 +6,8 @@ interface ResponseObject {
     error?: string
 }
 
-interface SearchQuery {
-    query: string
+interface Tracker {
+    name?: Array<string>
 }
 
-export { ResponseObject, SearchQuery };
+export { ResponseObject, Tracker };
