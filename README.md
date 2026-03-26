@@ -1,29 +1,50 @@
-# Client App
+# Star Wars Character Search CLI
 
 ## Overview
-[What this does in 2-3 sentences]
+[2-3 sentence description]
 
-## Setup
+## Prerequisites
+- Node.js 18+
+- Docker (for running the server)
+
+## Installation
 ```bash
 npm install
-npm run build
-npm start
 ```
 
 ## Usage
-[Examples of how to use it]
+```bash
+npm run dev
+```
+
+## Compile to JS, Run via npm
+```bash
+npm run build
+npm run start
+```
+
+## Running Test
+```bash
+npm run test
+```
+
+
+## Example
+[Screenshots or terminal output]
+
+## Features
+- Case-insensitive partial matching
+- Handles paginated responses
+- Error handling for edge cases
+- Clean console output
+
+## Project Structure
+[Brief explanation of files]
 
 ## Design Decisions
-- Why I chose X over Y
+- Why I chose X approach
 - Trade-offs I considered
 - What I'd improve with more time
 
 ## Testing
-```bash
-npm test
-```
-
-## Assumptions
-- Assumed Node 18+
-- Assumed Unix-based system
-- etc.
+[How I tested, edge cases covered]
