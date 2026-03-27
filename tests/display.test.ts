@@ -44,4 +44,13 @@ describe('displayResults', () => {
         await displayResults([], 'wrwerewrwe')
         expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('0 results'))
     })
+    it('should prompt user after last result', async () => {
+        const onComplete = vi.fn()
+        const mockResults = [{
+            name: 'Luke Skywalker',
+            films: ['A New Hope']
+        }] as ResponseObject[]
+        await displayResults(mockResults, 'luke', onComplete)
+        expect(onComplete).toHaveBeenCalledOnce()
+    })
 })

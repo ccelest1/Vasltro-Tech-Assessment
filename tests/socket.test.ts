@@ -42,4 +42,19 @@ describe('socketSetup', async () => {
 
         expect(exitSpy).toHaveBeenCalledWith(1)
     })
+    it('should emit search with sanitized query', () => {
+        socketSetup(vi.fn())
+        const emitSpy = (mockSocket.emit as ReturnType<typeof vi.fn>)
+        mockSocket.emit('search', {
+            query: 'luke'
+        })
+        expect(emitSpy).toHaveBeenCalledWith('search', {
+            query: 'luke'
+        })
+    })
+    it('should disconnect cleanly on exit', () => {
+        socketSetup(vi.fn())
+        mockSocket.disconnect()
+        expect((mockSocket.disconnect as ReturnType<typeof vi.fn>)).toHaveBeenCalledOnce()
+    })
 })

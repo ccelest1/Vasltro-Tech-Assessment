@@ -4,7 +4,11 @@ const sleep = (ms: number) => new Promise(
     resolve => setTimeout(resolve, ms)
 )
 
-async function displayResults(results: Array<ResponseObject>, input: string): Promise<void> {
+async function displayResults(
+    results: Array<ResponseObject>,
+    input: string,
+    onComplete?: () => void
+): Promise<void> {
     console.log(`\nFound ${results.length} results for Query: ${input}`)
     const filteredResults = results.filter(result => result.films)
     for (let result of filteredResults) {
@@ -14,6 +18,8 @@ async function displayResults(results: Array<ResponseObject>, input: string): Pr
             console.log(film)
         })
     }
+    onComplete?.()
+
 }
 
 export {
