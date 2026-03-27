@@ -1,8 +1,8 @@
-import { io, Socket } from "socket.io-client";
-import { ResponseObject, Tracker } from "../src/types";
+import { ResponseObject, ErrorObject, isError } from "../src/types";
 import * as readline from 'node:readline/promises';
-
-const socket: Socket = io('http://localhost:3000');
+import { isValidQuery } from "./utils/validation";
+import { displayResults } from "./utils/display";
+import { socket, socketSetup } from "./utils/socket";
 
 const rl = readline.createInterface({
     input: process.stdin,
@@ -11,87 +11,70 @@ const rl = readline.createInterface({
 
 let results: ResponseObject[] = [];
 let expectedResultsCount: number = 0;
-let query: string;
-const sleep = (ms: number) => new Promise(
-    resolve => setTimeout(resolve, ms)
-)
-let isPrompting = false;
-let resultsTracker: Tracker = {}
+let input: string;
+let isPrompting: boolean = false;
+let isExiting: boolean = false;
 
-socket.on('connect', () => {
-    console.log("✓ Connected to Star Wars API\n");
-    promptUserInput()
-})
+socketSetup(promptUserInput)
 
 async function promptUserInput() {
-    const input = await rl.question("\nEnter your character name (or 'exit' to quit): ");
+    input = await rl.question("\nEnter your character name (or 'exit' to quit): ");
     isPrompting = false
-    query = input.trim();
 
-    if (query.toLowerCase() === 'exit') {
-        console.log('\nGoodbye')
-        socket.disconnect()
-        rl.close()
-        process.exit()
+    const queryReturn = isValidQuery(input)
+
+    switch (queryReturn) {
+        case 'exit':
+            isExiting = true
+            console.log('\nGoodbye')
+            rl.removeAllListeners()
+            rl.close()
+            socket.off()
+            socket.disconnect()
+            break;
+        case '0-length':
+            console.log('\nPlease enter a character name\n')
+            promptUserInput()
+            return;
+        case 'non-valid-chars':
+            console.log('\nPlease enter a valid character name\n')
+            promptUserInput()
+            return;
+        default:
+            results = []
+            expectedResultsCount = 0
+            console.log(`\nSearching for ${input}`)
+            socket.emit("search", { query: queryReturn })
     }
-    if (query.length === 0) {
-        console.log('\nPlease enter a character name\n')
-        promptUserInput()
-        return;
-    }
-
-    results = []
-    expectedResultsCount = 0
-
-    console.log(`\nSearching for ${query}`)
-
-    socket.emit("search", { query })
 }
 
-socket.on("search", async (data: ResponseObject) => {
-    if (data.page == -1 && data.error) {
-        console.error("No results found", data.error)
+socket.on("search", async (data: ResponseObject | ErrorObject) => {
+    if (isExiting) return;
+    if (isError(data)) {
+        console.log(`\nNo matches found for query: ${input}\nPlease try a different name.`)
         if (!isPrompting) {
             isPrompting = true
             promptUserInput()
         }
-    }
+    } else {
+        results.push(data)
+        expectedResultsCount = data.resultCount
+        process.stdout.write(`\nReceived ${results.length} of ${expectedResultsCount} results...`)
 
-    results.push(data)
-    expectedResultsCount = data.resultCount
-
-    process.stdout.write(`\nReceived ${results.length} of ${expectedResultsCount} results...`)
-
-    if (data.page === expectedResultsCount) {
-        console.log("\n\nAll results returned")
-        try {
-            await displayResults()
-        } catch (e) {
-            console.error(e)
+        if (data.page === expectedResultsCount) {
+            console.log("\n\nAll results returned")
+            try {
+                await displayResults(results, input)
+            } catch (e) {
+                console.error('An error occurred:', e)
+                console.log('Please try a different entry!')
+                isPrompting = true
+                promptUserInput()
+            }
+            if (!isPrompting) {
+                isPrompting = true
+                promptUserInput()
+            }
         }
-        if (!isPrompting) {
-            isPrompting = true
-            promptUserInput()
-        }
     }
-
 })
-
-async function displayResults(): Promise<void> {
-    console.log(`\nFound ${results.length} results for Query: ${query}`)
-
-    for (let result of results) {
-        await sleep(Math.floor(Math.random() * (1000 - 250 + 1)) + 250)
-        let filmsString = result.films!.join(", ")
-        console.log(`\n${result.name} appears in the films: ${filmsString}`)
-    }
-}
-
-socket.on("connect_error", (error) => {
-    console.error("Connection failed", error.message)
-    process.exit(1)
-})
-
-socket.on("disconnect", () => {
-    console.log("Disconnected from local server");
-});
