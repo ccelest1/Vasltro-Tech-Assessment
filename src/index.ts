@@ -9,6 +9,15 @@ const rl = readline.createInterface({
     output: process.stdout
 });
 
+rl.on('SIGINT', () => {
+    console.log('\nGoodbye')
+    rl.removeAllListeners()
+    rl.close()
+    socket.off()
+    socket.disconnect()
+    process.exit(0)
+})
+
 let results: ResponseObject[] = [];
 let expectedResultsCount: number = 0;
 let input: string;
