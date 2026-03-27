@@ -28,7 +28,6 @@ npm run start
 npm run test
 ```
 
-
 ## Example
 [Screenshots or terminal output]
 
