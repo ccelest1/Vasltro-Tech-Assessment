@@ -16,6 +16,7 @@ vi.mock('socket.io-client', () => {
 })
 
 import { io } from 'socket.io-client'
+import { beforeEach } from 'node:test'
 const mockSocket = io()
 describe('socketSetup', async () => {
     it('should call onConnect when connect fires', () => {
@@ -30,7 +31,10 @@ describe('socketSetup', async () => {
 
         expect(onConnect).toHaveBeenCalledOnce()
     })
-
+    beforeEach(() => {
+        vi.clearAllMocks()
+        socketSetup(vi.fn())
+    })
     it('should call process.exit on connect_error', () => {
         const exitSpy = vi.spyOn(process, 'exit').mockImplementation(() => undefined as never)
         const errorHandler = (mockSocket.on as ReturnType<typeof vi.fn>).mock.calls.find(([event]) => event === 'connect_error')?.[1]
