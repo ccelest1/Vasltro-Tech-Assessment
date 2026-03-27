@@ -26,4 +26,7 @@ describe('isValidQuery', () => {
         expect(isValidQuery("Obi-Wan Kenobi")).toBe('obi-wan kenobi')
         expect(isValidQuery("'s")).toBe('s')
     })
+    it('should return sanitized partial match', () => {
+        expect(isValidQuery("dar")).toBe('dar')
+    })
 })
