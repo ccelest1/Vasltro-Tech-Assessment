@@ -1,13 +1,16 @@
 interface ResponseObject {
     page: number,
     resultCount: number;
-    name?: string;
-    films?: Array<string>
-    error?: string
+    name: string;
+    films: Array<string>
+}
+interface ErrorObject {
+    page: number,
+    resultCount: number,
+    error: string
+}
+function isError(data: ResponseObject | ErrorObject): data is ErrorObject{
+    return data.page === -1
 }
 
-interface Tracker {
-    name?: Array<string>
-}
-
-export { ResponseObject, Tracker };
+export { ResponseObject, ErrorObject, isError };
